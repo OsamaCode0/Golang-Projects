@@ -7,12 +7,11 @@ import(
 	"os"
 	"io"
 
-
 )
 
 
 // Processes input and handles errors
-func ProcessInput(){
+func ProcessInput()([]byte, error){
 
 	// Check that at least 4 arguments are given + name
 	if len(os.Args) < 5{
@@ -69,6 +68,7 @@ func ProcessInput(){
 	fmt.Println(string(content))
 
 
+	return content, nil
 
 }
 
