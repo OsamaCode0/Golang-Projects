@@ -54,14 +54,13 @@ func ProcessInput() (*bufio.Scanner, *os.File){
 	}
 
 
-	// 
+	// Create a new Scanner
 	scanner := bufio.NewScanner(networkMap)
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
 
 
-	
 
 	return scanner, networkMap
 
