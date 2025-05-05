@@ -76,19 +76,12 @@ func ProcessInput() (*bufio.Scanner, *os.File){
 
 
 
+
+
 	return scanner, networkMap
 
 }
 
-
-
-// Handles the logic of trains
-func ProcessTrains(){
-
-
-
-
-}
 
 
 
