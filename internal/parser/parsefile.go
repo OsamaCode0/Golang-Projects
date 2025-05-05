@@ -25,11 +25,12 @@ func ParseMap(){
 			// Debug print
 			fmt.Printf("Found '%s' at index %d\n", searchString, i)
 			found = true
-			break 
 		}
+		// Handle the logic when "stations: is found"
 		if found{
 			
 		}
+	
 	}
 
 	if !found {
