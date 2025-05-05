@@ -7,27 +7,36 @@ import (
 	"strconv"
 )
 
+
+// Save arguments to variables
+var(
+	networkPath = os.Args[1]
+	startStation = os.Args[2]
+	endStation = os.Args[3]
+	NumTrainsStr = os.Args[4] 
+)
+
+// Public Variables
+var( 
+	NumTrainsInt int 
+)
+
+ 
 // Processes user's input and handles errors
 func ProcessInput() (*bufio.Scanner, *os.File){
+
+	var err error
+
+	NumTrainsInt, err = strconv.Atoi(NumTrainsStr)
+	if err != nil{
+		fmt.Println("Error while converting trains to int: ", err)
+		os.Exit(1)
+	}
+
 
 	// Check that correct amount of arguments are given
 	if len(os.Args) != 5{
 		fmt.Fprintln(os.Stderr, "Error: Too few command line arguments")
-		os.Exit(1)
-	}
-
-	
-
-	// Save arguments to variables
-	networkPath := os.Args[1]
-	startStation := os.Args[2]
-	endStation := os.Args[3]
-	numTrainsStr := os.Args[4] 
-
-	numTrainInt, err := strconv.Atoi(numTrainsStr)
-
-	if err != nil{
-		fmt.Println("Error while converting trains to int: ", err)
 		os.Exit(1)
 	}
 
@@ -46,11 +55,11 @@ func ProcessInput() (*bufio.Scanner, *os.File){
 		fmt.Fprintln(os.Stderr, "Error: Please specify the end station")
 		os.Exit(1)
 	}
-	if numTrainsStr == ""{
+	if NumTrainsStr == ""{
 		fmt.Fprintln(os.Stderr, "Error: Please enter the amount of trains")
 		os.Exit(1)
 	}
-	if numTrainInt < 1{
+	if NumTrainsInt < 1{
 		fmt.Fprintln(os.Stderr, "Error: Number of trains has to be a positive integer")
 	}
 
@@ -81,8 +90,6 @@ func ProcessInput() (*bufio.Scanner, *os.File){
 	return scanner, networkMap
 
 }
-
-
 
 
 
