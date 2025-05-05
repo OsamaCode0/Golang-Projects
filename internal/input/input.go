@@ -16,10 +16,11 @@ import (
 // Processes user's input and handles errors
 func ProcessInput() []byte{
 
-	// Check that at least 4 arguments are given + name
+	// Check that correct amount of arguments are given
 	if len(os.Args) < 5{
 		fmt.Fprintln(os.Stderr, "Error: Too few command line arguments")
 		os.Exit(1)
+	// This might need removal if flags are present
 	}else if len(os.Args) > 5{
 		fmt.Fprintln(os.Stderr, "Error: Too many command line arguments")
 		os.Exit(1)
