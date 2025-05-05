@@ -29,13 +29,13 @@ func ProcessInput() (*bufio.Scanner, *os.File){
 
 	NumTrainsInt, err = strconv.Atoi(NumTrainsStr)
 	if err != nil{
-		fmt.Println("Error while converting trains to int: ", err)
+		fmt.Println("Error while converting numTrainsStr to int: ", err)
 		os.Exit(1)
 	}
 
 
 	// Check that correct amount of arguments are given
-	if len(os.Args) != 5{
+	if len(os.Args) != 5 {
 		fmt.Fprintln(os.Stderr, "Error: Too few command line arguments")
 		os.Exit(1)
 	}
