@@ -1,20 +1,13 @@
-
 package input
 
-
-
 import (
-	
+	"bufio"
 	"fmt"
 	"os"
-	"io"
 )
 
-
-
-
 // Processes user's input and handles errors
-func ProcessInput() []byte{
+func ProcessInput() (*bufio.Scanner, *os.File){
 
 	// Check that correct amount of arguments are given
 	if len(os.Args) < 5{
@@ -59,18 +52,18 @@ func ProcessInput() []byte{
 		fmt.Fprintln(os.Stderr, "Error: Network map not found!")
 		os.Exit(1)
 	}
-	defer networkMap.Close()
 
 
-	// Read the entire file content
-	content, err := io.ReadAll(networkMap)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error reading network map:", err)
-		os.Exit(1)
+	// 
+	scanner := bufio.NewScanner(networkMap)
+	if err := scanner.Err(); err != nil {
+		panic(err)
 	}
 
 
-	return content
+	
+
+	return scanner, networkMap
 
 }
 
