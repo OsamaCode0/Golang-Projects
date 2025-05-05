@@ -10,15 +10,10 @@ import (
 func ProcessInput() (*bufio.Scanner, *os.File){
 
 	// Check that correct amount of arguments are given
-	if len(os.Args) < 5{
+	if len(os.Args) != 5{
 		fmt.Fprintln(os.Stderr, "Error: Too few command line arguments")
 		os.Exit(1)
-	// This might need removal later if flags are present
-	}else if len(os.Args) > 5{
-		fmt.Fprintln(os.Stderr, "Error: Too many command line arguments")
-		os.Exit(1)
 	}
-
 
 	// Save arguments to variables
 	networkPath := os.Args[1]
@@ -28,7 +23,7 @@ func ProcessInput() (*bufio.Scanner, *os.File){
 
 	// Check that value has been given to each argument
 	if networkPath== ""{
-		fmt.Fprintln(os.Stderr, "Error: Please enter path to network map file")
+		fmt.Fprintln(os.Stderr, "Error: Please enter path to the network map file")
 		os.Exit(1)
 	}
 	if startStation == ""{
