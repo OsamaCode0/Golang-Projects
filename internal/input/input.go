@@ -27,7 +27,8 @@ func ProcessInput() (*bufio.Scanner, *os.File){
 	numTrainInt, err := strconv.Atoi(numTrainsStr)
 
 	if err != nil{
-		return 
+		fmt.Println("Error while converting trains to int: ", err)
+		os.Exit(1)
 	}
 
 
