@@ -1,43 +1,59 @@
 package parser
 
 import (
+
 	"fmt"
 	"stations/internal/input"
-	// strings
+	
 	
 )
 
 
+
 func ParseMap(){
 
-	// Get the contents from the input processing function
-	contentsByte := input.ProcessInput()
+		// Get the scanned file from the input processing function
+		scanner, file := input.ProcessInput()
+		defer file.Close()
 
-
-	// Search for stations: from the file's contents
-	searchString := "stations:"
-	searchBytes := []byte(searchString)
-	n := len(searchBytes)
-	found := false 
-
-	for i := 0; i <= len(contentsByte)-n; i++ {
-		if string(contentsByte[i:i+n]) == searchString {
-			// Debug print
-			fmt.Printf("Found '%s' at index %d\n", searchString, i)
-			found = true
-		}
-		// Handle the logic when "stations: is found"
-		if found{
-			
+	
+		var stations []string
+		var connections []string
+		inStations := false
+		inConnections := false
+	
+		for scanner.Scan() {
+			line := scanner.Text()
+	
+			switch {
+			case line == "stations:":
+				inStations = true
+				inConnections = false
+				continue
+			case line == "connections:":
+				inStations = false
+				inConnections = true
+				continue
+			}
+	
+			if inStations {
+				if line != "" {
+					stations = append(stations, line)
+				}
+			} else if inConnections {
+				if line != "" {
+					connections = append(connections, line)
+				}
+			}
 		}
 	
-	}
-
-	if !found {
-		fmt.Printf("%s not found in the network map content.\n", searchString)
-	}
-
-
+		if err := scanner.Err(); err != nil {
+			fmt.Println("Error while parsing:", err)
+		}
+	
+		// Debug prints
+		fmt.Println("Stations:", stations)
+		fmt.Println("Connections:", connections)
 
 
 }
