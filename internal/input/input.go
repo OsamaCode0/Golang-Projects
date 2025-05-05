@@ -20,7 +20,7 @@ func ProcessInput() []byte{
 	if len(os.Args) < 5{
 		fmt.Fprintln(os.Stderr, "Error: Too few command line arguments")
 		os.Exit(1)
-	// This might need removal if flags are present
+	// This might need removal later if flags are present
 	}else if len(os.Args) > 5{
 		fmt.Fprintln(os.Stderr, "Error: Too many command line arguments")
 		os.Exit(1)
