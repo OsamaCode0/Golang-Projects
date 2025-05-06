@@ -26,8 +26,10 @@ func ParseMap() ([]string, []Connection, error) {
 	inConnections := false
 	sawStations := false
 	SawConnections := false
-	seenStations := make(map[string]struct{}, maxStations)
+	seenStations := make(map[string]bool, maxStations)
+	
 
+	// Loop through the file
 	for scanner.Scan() {
 
 		line := strings.TrimSpace(scanner.Text())
@@ -53,17 +55,20 @@ func ParseMap() ([]string, []Connection, error) {
 			continue
 		}
 
+		// stations: section logic
 		if inStations {
 			if line != "" {
 				if _, dup := seenStations[line]; dup {
 					return nil, nil, fmt.Errorf("duplicate station %q", line)
 				}
-				seenStations[line] = struct{}{}
+				seenStations[line] = true
 
 				if len(seenStations) > maxStations {
 					return nil, nil, fmt.Errorf("too many stations: limit is %d", maxStations)
 				}
+				stations = append(stations, line)
 			}
+		// connections: section logic
 		} else if inConnections {
 			if line != "" {
 				parts := strings.Split(line, "-")
@@ -78,14 +83,17 @@ func ParseMap() ([]string, []Connection, error) {
 				if from == "" || to == "" {
 					return nil, nil, fmt.Errorf("invalid connection endpoints: %q", line)
 				}
-
+				if !seenStations[parts[0]] || !seenStations[parts[1]]{
+					return nil, nil, fmt.Errorf("station(s) doesn't exist: %q", line)
+				}
+				 
 				connections = append(connections, Connection{From: from, To: to})
 			}
 
 		}
 
 	}
-
+	// Handle errors
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error while parsing:", err)
 	}
