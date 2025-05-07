@@ -13,7 +13,7 @@ var(
 	networkPath = os.Args[1]
 	startStation = os.Args[2]
 	endStation = os.Args[3]
-	NumTrainsStr = os.Args[4] 
+	numTrainsStr = os.Args[4] 
 )
 
 // Public Variables
@@ -23,71 +23,60 @@ var(
 
  
 // Processes user's input and handles errors
-func ProcessInput() (*bufio.Scanner, *os.File){
+func ProcessInput() (*bufio.Scanner, *os.File, error){
 
 	var err error
 
-	NumTrainsInt, err = strconv.Atoi(NumTrainsStr)
-	if err != nil{
-		fmt.Println("Error while converting numTrainsStr to int: ", err)
-		os.Exit(1)
-	}
-
-
-	// Check that correct amount of arguments are given
 	if len(os.Args) != 5 {
-		fmt.Fprintln(os.Stderr, "Error: Too few command line arguments")
-		os.Exit(1)
+		return nil, nil, fmt.Errorf(
+			"incorrect number of command-line arguments: expected 4 (networkPath, startStation, endStation, numTrains), but got %d",len(os.Args)-1,
+		 )
+	}
+
+	// Validate user's input
+	if networkPath == "" {
+		return nil, nil, fmt.Errorf("network path cannot be empty")
+	}
+
+	if startStation == "" {
+		return nil, nil, fmt.Errorf("start station cannot be empty")
+	}
+
+	if endStation == "" {
+		return nil, nil, fmt.Errorf("end station cannot be empty")
+	}
+
+	if numTrainsStr == "" {
+		return nil, nil, fmt.Errorf("number of trains cannot be empty")
+	}
+
+	// Convert numTrainStr to an integer
+	NumTrainsInt, err = strconv.Atoi(numTrainsStr)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error converting number of trains ('%s') to an integer: %w", numTrainsStr, err)
+	}
+
+	if NumTrainsInt < 1 {
+		return nil, nil, fmt.Errorf("number of trains must be a positive integer, got %d", NumTrainsInt)
+	}
+
+	if startStation == endStation {
+		return nil, nil, fmt.Errorf("start station ('%s') and end station ('%s') cannot be the same", startStation, endStation)
 	}
 
 
-	// Error handling
-	if networkPath == ""{
-		fmt.Fprintln(os.Stderr, "Error: Please enter path to the network map file")
-		os.Exit(1)
-	}
-	if startStation == ""{
-		fmt.Fprintln(os.Stderr, "Error: Please specify the starting station")
-		os.Exit(1)
-	}
 
-	if endStation == ""{
-		fmt.Fprintln(os.Stderr, "Error: Please specify the end station")
-		os.Exit(1)
-	}
-	if NumTrainsStr == ""{
-		fmt.Fprintln(os.Stderr, "Error: Please enter the amount of trains")
-		os.Exit(1)
-	}
-	if NumTrainsInt < 1{
-		fmt.Fprintln(os.Stderr, "Error: Number of trains has to be a positive integer")
-	}
-
-	if startStation == endStation{
-		fmt.Fprintln(os.Stderr, "Error: Cannot have the same starting and ending station")
-		os.Exit(1)
-	}
-
-
-	// Open networkmap for reading
+	// Open the network map file.
 	networkMap, err := os.Open(networkPath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error: Network map not found!")
-		os.Exit(1)
+		return nil, nil, fmt.Errorf("error opening network map file '%s': %w", networkPath, err)
 	}
-
 
 	// Create a new Scanner
 	scanner := bufio.NewScanner(networkMap)
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
+	
 
-
-
-
-
-	return scanner, networkMap
+	return scanner, networkMap, nil
 
 }
 
