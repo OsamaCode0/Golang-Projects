@@ -1,9 +1,13 @@
 package parser
 
 import (
+
 	"fmt"
+	"os"
 	"stations/internal/input"
 	"strings"
+	"bufio"
+	
 )
 
 type Connection struct {
@@ -14,20 +18,34 @@ type Connection struct {
 const maxStations = 10000
 
 // Parses the network map
-func ParseMap() ([]string, []Connection, error) {
+func ParseMap(inputArgs *input.InputArgs) ([]string, []Connection, error) {
 
-	// Get the scanned file from the input processing function
-	scanner, file := input.ProcessInput()
-	defer file.Close()
 
+	// Open the network map file.
+	networkMap, err := os.Open(inputArgs.NetworkPath)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error opening network map file '%w", err)
+	}
+	
+	// Create a new Scanner
+	scanner := bufio.NewScanner(networkMap)
+
+	defer networkMap.Close()
+
+
+	
 	var stations []string
 	var connections []Connection
+
+
+
 	inStations := false
 	inConnections := false
 	sawStations := false
 	SawConnections := false
 	seenStations := make(map[string]bool, maxStations)
-	
+	startStation := inputArgs.StartStation
+	endStation := inputArgs.EndStation
 
 	// Loop through the file
 	for scanner.Scan() {
@@ -57,16 +75,19 @@ func ParseMap() ([]string, []Connection, error) {
 
 		// stations: section logic
 		if inStations {
+			//startStation := inputs.StartStation
+			//seenStart := false
+			
 			if line != "" {
 				if _, dup := seenStations[line]; dup {
 					return nil, nil, fmt.Errorf("duplicate station %q", line)
 				}
 				seenStations[line] = true
-
 				if len(seenStations) > maxStations {
 					return nil, nil, fmt.Errorf("too many stations: limit is %d", maxStations)
 				}
 				stations = append(stations, line)
+
 			}
 		// connections: section logic
 		} else if inConnections {
@@ -93,10 +114,23 @@ func ParseMap() ([]string, []Connection, error) {
 		}
 
 	}
+
+
 	// Handle errors
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Error while parsing:", err)
+		return nil, nil, fmt.Errorf("error scanning network map file: %w", err)
 	}
+
+	if _, exists := seenStations[startStation]; !exists{
+		fmt.Println(seenStations)
+		return nil, nil, fmt.Errorf("start station '%s' not found in the network map stations", startStation)
+	}
+	
+	if _, exists := seenStations[endStation]; !exists{
+		return nil, nil, fmt.Errorf("end station '%s' not found in the network map stations", endStation)
+	}
+
+	
 
 	if !sawStations {
 		return nil, nil, fmt.Errorf(`missing "stations:" section`)
@@ -105,10 +139,11 @@ func ParseMap() ([]string, []Connection, error) {
 		return nil, nil, fmt.Errorf(`missing "connections:" section`)
 	}
 
+
 	// Debug prints
 	fmt.Println("Stations:", stations)
 	fmt.Println("Connections:", connections)
-	fmt.Println("number of trains:", input.NumTrainsInt)
+	fmt.Println("number of trains:", inputArgs.NumTrains)
 
 	return stations, connections, nil
 
