@@ -27,7 +27,7 @@ func ProcessInput(args []string) (*InputArgs, error) {
 		return  nil, fmt.Errorf("incorrect number of command-line arguments: expected 4 (networkPath, startStation, endStation, numTrains), but got %d", len(os.Args)-1,)
 	}
 
-	// Access arguments safely after checking the length
+	// Save arguments to variables
 	networkPath := args[1]
 	startStation := args[2]
 	endStation := args[3]
