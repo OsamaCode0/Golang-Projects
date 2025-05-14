@@ -124,7 +124,7 @@ func ParseMap(inputArgs *input.InputArgs) ([]Station, []Connection, error) {
 
 			
 				// Check for duplicates
-				if _, dup := seenStations[stationName]; dup {
+				if _, isDup := seenStations[stationName]; isDup {
 					return nil, nil, fmt.Errorf("duplicate station name %q", stationName)
 				}
 				// Check that the limit(10,000) of stations is not exeeced
@@ -169,11 +169,8 @@ func ParseMap(inputArgs *input.InputArgs) ([]Station, []Connection, error) {
 				// Populate connections
 				connections = append(connections, Connection{From: from, To: to})
 			}
-
 		}
-
 	}
-
 
 	// Handle scanning errors
 	if err := scanner.Err(); err != nil {
