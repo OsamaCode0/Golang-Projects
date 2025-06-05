@@ -3,38 +3,47 @@ package main
 import (
 	"fmt"
 	"os"
+	"stations/internal/algorithm"
 	"stations/internal/input"
 	"stations/internal/parser"
-	"stations/internal/algorithm"
+	"strings"
 )
 
-
-
-
 func main() {
-    inputArgs, err := input.ProcessInput(os.Args)
-    if err != nil {
-        fmt.Fprintln(os.Stderr, "Failed to validate user's input:", err)
-        os.Exit(1)
-    }
+	if len(os.Args) != 5 {
+		fmt.Fprintln(os.Stderr, "Error: incorrect number of arguments")
+		os.Exit(1)
+	}
 
-    stations, connections, err := parser.ParseMap(inputArgs)
+	inputArgs, err := input.ProcessInput(os.Args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 
-		
+	stations, connections, err := parser.ParseMap(inputArgs)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
 
-    if err != nil {
-        fmt.Fprintln(os.Stderr, "Failed to parse network map:", err)
-        os.Exit(1)
-    }
+	// Calculate max path length based on network size
+	maxPathLength := len(stations) * 2
+	if maxPathLength > 100 {
+		maxPathLength = 100 // Cap for large networks
+	}
 
-		End, err := algorithm.AlgoBFD(connections, stations, inputArgs.StartStation, inputArgs.EndStation, inputArgs.NumTrains)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Doesnt work man", err)
-			os.Exit(0)
-		}
+	allPaths, err := algorithm.FindAllPathsUpToLength(connections, inputArgs.StartStation, inputArgs.EndStation, maxPathLength)
+if err != nil {
+    fmt.Fprintln(os.Stderr, "Error:", err)
+    os.Exit(1)
+}
 
-		for _, value := range End {
-			fmt.Printf(" %s \n", value)
-		}
+assignedPaths := algorithm.AssignPathsToTrains(allPaths, inputArgs.NumTrains)
+simulationResult := algorithm.SimulateTrainMovement(assignedPaths, inputArgs.NumTrains)
 
+// Print simulation results
+for _, turn := range simulationResult {
+    fmt.Println(strings.Join(turn, " "))
+}
 }
